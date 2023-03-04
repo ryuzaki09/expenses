@@ -1,0 +1,68 @@
+{
+  "extends": [
+    "standard",
+    "eslint:recommended",
+    "plugin:react/recommended",
+    "plugin:@typescript-eslint/recommended"
+  ],
+  "env": {
+    "commonjs": true,
+    "mocha": true,
+    "browser": true
+  },
+  "parser": "babel-eslint",
+  "parserOptions": {
+    "ecmaFeatures": {
+      "jsx": true
+    }
+  },
+  "plugins": ["react", "prettier", "import"],
+  "rules": {
+    "arrow-parens": ["error", "always"],
+    "comma-dangle": 2,
+    "object-curly-spacing": 0,
+    "react/jsx-no-bind": [
+      "error",
+      {
+        "allowArrowFunctions": true,
+        "allowBind": false,
+        "ignoreRefs": true
+      }
+    ],
+    "react/no-did-update-set-state": "error",
+    "react/no-unknown-property": "error",
+    "react/no-unused-prop-types": "error",
+    "react/no-string-refs": 0,
+    "react/no-unescaped-entities": 0,
+    "react/prop-types": 0,
+    "react/react-in-jsx-scope": "error",
+    "react/jsx-uses-react": "error",
+    "react/jsx-uses-vars": "error",
+    "space-before-function-paren": 0,
+    "semi": 2,
+    "@typescript-eslint/explicit-function-return-type": 0,
+    "no-console": 0,
+    "no-unused-vars": 0,
+    "no-undef": 0
+  },
+  "settings": {
+    "react": {"version": "detect"}
+  },
+  "overrides": [
+    {
+      "files": ["**/*.ts", "**/*.tsx"],
+      "parser": "@typescript-eslint/parser",
+      "parserOptions": {
+        "ecmaVersion": 2019,
+        "sourceType": "module",
+        "ecmaFeatures": {"jsx": true}
+      },
+      "plugins": ["react", "prettier", "import", "@typescript-eslint"],
+      "rules": {
+        "@typescript-eslint/explicit-function-return-type": 0,
+        "@typescript-eslint/member-delimiter-style": 0,
+        "@typescript-eslint/no-explicit-any": 0
+      }
+    }
+  ]
+}

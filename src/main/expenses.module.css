@@ -1,0 +1,26 @@
+.monthsContainer {
+  padding: 0;
+  list-style-type: none;
+}
+.monthsContainer li {
+  padding: 10px 15px;
+  display: inline-block;
+  margin-right: 7px;
+  border: 1px solid black;
+  border-radius: 5px;
+}
+
+.monthsContainer li.disabled,
+.monthsContainer li.disabled:hover {
+  background-color: #cacaca;
+  color: black;
+}
+
+.monthsContainer li:hover {
+  background-color: red;
+  color: white;
+}
+
+.monthsContainer li:last-child {
+  margin-right: 0;
+}
