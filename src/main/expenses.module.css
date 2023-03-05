@@ -10,6 +10,10 @@
   border-radius: 5px;
 }
 
+.monthsContainer li.selected {
+  background-color: cornflowerblue;
+}
+
 .monthsContainer li.disabled,
 .monthsContainer li.disabled:hover {
   background-color: #cacaca;

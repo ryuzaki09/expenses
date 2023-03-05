@@ -19,23 +19,31 @@ const monthNames = [
 ]
 
 export function Expenses() {
-  const [datePickerIsOpen, setDatePickerIsOpen] = useState(false);
-  const [expenseDate, setExpenseDate] = useState<string | null>(null);
+  const [datePickerIsOpen, setDatePickerIsOpen] = useState(false)
+  const [expenseDate, setExpenseDate] = useState<string | null>(null)
+  const [datePickerDate, setDatePickerDate] = useState(date)
+
   const onFocusHandler = () => {
     setDatePickerIsOpen(true);
   }
-  const onSelectDate = (data: any) => {
-    console.log('data: ', data)
+  const onSelectDate = (date?: Date) => {
     setDatePickerIsOpen(false)
-    const formattedDate = format(data, 'dd/MM/YYY')
-    setExpenseDate(formattedDate)
+    if (date) {
+      const formattedDate = format(date, 'dd/MM/YYY')
+      setExpenseDate(formattedDate)
+    }
   }
-  console.log('todays date: ', format(date, "dd/MM/yyyy"))
+  const onMonthClickCallback = (month: number) => {
+    const newDate = new Date(year, month, 1) 
+    // console.log('newdate: ', format(newDate, "dd/MM/yyyy"))
+    setDatePickerDate(newDate)
+  }
+  // console.log('todays date: ', format(date, "dd/MM/yyyy"))
 
   return (
     <>
       Today's date: {format(date, 'dd/MM/yyyy')}
-      <Months />
+      <Months callbackFn={onMonthClickCallback} />
       <TextInput
         label="date"
         readOnly
@@ -46,13 +54,10 @@ export function Expenses() {
         <DayPicker
           mode="single"
           onSelect={onSelectDate}
-          fromMonth={date}
-          toMonth={date}
+          fromMonth={datePickerDate}
+          toMonth={datePickerDate}
         />
       )}
-      <div>
-        {`${monthNames[currentMonth]} ${year}`}
-      </div>
       <TextInput label="amount" />
       <div>
         <Button>Add</Button>
@@ -61,17 +66,37 @@ export function Expenses() {
   )
 }
 
-function Months() {
+interface IMonthProps {
+  callbackFn: (month: number) => void
+}
+
+function Months({callbackFn}: IMonthProps) {
+  const [selectedMonth, setSelectedMonth] = useState(currentMonth)
+
   return (
     <>
       <ul className={styles.monthsContainer}>
         {monthNames.map((month, index) => {
-          console.log('currentMonth: ', currentMonth,' month: ', month)
-        const isBeyondCurrentMonth = index > currentMonth
+          // console.log('currentMonth: ', currentMonth,' month: ', month)
+          const isBeyondCurrentMonth = index > currentMonth
+          const isSelectedMonth = selectedMonth === index
           return (
-            <li key={month} className={
-              classname({[styles.disabled]: isBeyondCurrentMonth})
-            }>
+            <li
+              key={month}
+              className={
+                classname({
+                  [styles.disabled]: isBeyondCurrentMonth,
+                  [styles.selected]: isSelectedMonth
+                })
+              }
+              onClick={() => {
+                if (isBeyondCurrentMonth) {
+                  return 
+                }
+                setSelectedMonth(index)
+                callbackFn(index)
+              }}
+            >
               {month}
             </li>
           )
