@@ -4,10 +4,20 @@ import styles from './index.module.css'
 
 interface IButtonProps {
   children: React.ReactNode;
+  onClick: () => void;
 }
 
 export function Button({
-  children
+  children,
+  onClick
 }: IButtonProps) {
-  return <button className={styles.button} type='button'>{children}</button>
+  return (
+    <button
+      className={styles.button}
+      type='button'
+      onClick={onClick}
+    >
+      {children}
+    </button>
+  )
 }

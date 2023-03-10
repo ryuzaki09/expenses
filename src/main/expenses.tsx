@@ -18,10 +18,18 @@ const monthNames = [
   'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
 ]
 
+interface IExpenseDetails {
+  date: null | string;
+  amount: string;
+}
+
 export function Expenses() {
   const [datePickerIsOpen, setDatePickerIsOpen] = useState(false)
-  const [expenseDate, setExpenseDate] = useState<string | null>(null)
   const [datePickerDate, setDatePickerDate] = useState(date)
+  const [expenseDetails, setExpenseDetails] = useState<IExpenseDetails>({
+    date: null,
+    amount: ''
+  })
 
   const onFocusHandler = () => {
     setDatePickerIsOpen(true);
@@ -30,13 +38,25 @@ export function Expenses() {
     setDatePickerIsOpen(false)
     if (date) {
       const formattedDate = format(date, 'dd/MM/YYY')
-      setExpenseDate(formattedDate)
+      setExpenseDetails((prevState) => ({...prevState, date: formattedDate}))
     }
   }
   const onMonthClickCallback = (month: number) => {
     const newDate = new Date(year, month, 1) 
     // console.log('newdate: ', format(newDate, "dd/MM/yyyy"))
     setDatePickerDate(newDate)
+  }
+
+  const amountOnChange = (value: string) => {
+    console.log('value: ', value)
+    if (isNaN(value)) {
+      return
+    }
+
+    setExpenseDetails((prevState) => ({...prevState, amount: value}))
+  }
+  const addExpense = () => {
+    console.log('expenseDetails: ', expenseDetails)
   }
   // console.log('todays date: ', format(date, "dd/MM/yyyy"))
 
@@ -48,7 +68,7 @@ export function Expenses() {
         label="date"
         readOnly
         onFocus={onFocusHandler}
-        value={expenseDate || ''} 
+        value={expenseDetails.date || ''} 
       />
       {datePickerIsOpen && (
         <DayPicker
@@ -58,9 +78,13 @@ export function Expenses() {
           toMonth={datePickerDate}
         />
       )}
-      <TextInput label="amount" />
+      <TextInput
+        value={expenseDetails.amount}
+        label="amount"
+        onChange={(e) => amountOnChange(e.target.value)}
+      />
       <div>
-        <Button>Add</Button>
+        <Button onClick={addExpense}>Add</Button>
       </div>
     </>
   )
