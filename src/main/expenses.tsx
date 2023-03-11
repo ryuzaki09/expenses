@@ -9,10 +9,9 @@ import {Button} from '../common/components/button'
 import 'react-day-picker/dist/style.css'
 import styles from './expenses.module.css'
 
-const date = new Date()
-// console.log('Date: ', new Date(2021, 0, 23));
-const year = date.getFullYear()
-const currentMonth = date.getMonth()
+const today = new Date()
+const year = today.getFullYear()
+const currentMonth = today.getMonth()
 
 const monthNames = [
   'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
@@ -20,14 +19,16 @@ const monthNames = [
 
 interface IExpenseDetails {
   date: null | string;
+  title: string;
   amount: string;
 }
 
 export function Expenses() {
   const [datePickerIsOpen, setDatePickerIsOpen] = useState(false)
-  const [datePickerDate, setDatePickerDate] = useState(date)
+  const [datePickerDate, setDatePickerDate] = useState(today)
   const [expenseDetails, setExpenseDetails] = useState<IExpenseDetails>({
     date: null,
+    title: '',
     amount: ''
   })
 
@@ -43,26 +44,27 @@ export function Expenses() {
   }
   const onMonthClickCallback = (month: number) => {
     const newDate = new Date(year, month, 1) 
-    // console.log('newdate: ', format(newDate, "dd/MM/yyyy"))
     setDatePickerDate(newDate)
   }
 
   const amountOnChange = (value: string) => {
     console.log('value: ', value)
-    if (isNaN(value)) {
+    if (isNaN(+value)) {
       return
     }
 
     setExpenseDetails((prevState) => ({...prevState, amount: value}))
   }
+  const titleOnChange = (value: string) => {
+    setExpenseDetails((prevState) => ({...prevState, title: value}))
+  }
   const addExpense = () => {
     console.log('expenseDetails: ', expenseDetails)
   }
-  // console.log('todays date: ', format(date, "dd/MM/yyyy"))
 
   return (
     <>
-      Today's date: {format(date, 'dd/MM/yyyy')}
+      Today's date: {format(today, 'dd/MM/yyyy')}
       <Months callbackFn={onMonthClickCallback} />
       <TextInput
         label="date"
@@ -76,12 +78,22 @@ export function Expenses() {
           onSelect={onSelectDate}
           fromMonth={datePickerDate}
           toMonth={datePickerDate}
+          disabled={{after: today}}
         />
       )}
       <TextInput
+        value={expenseDetails.title}
+        label="title"
+        onChange={
+          (e: React.ChangeEvent<HTMLInputElement>) => titleOnChange(e.target.value)
+        }
+      />
+      <TextInput
         value={expenseDetails.amount}
         label="amount"
-        onChange={(e) => amountOnChange(e.target.value)}
+        onChange={
+          (e: React.ChangeEvent<HTMLInputElement>) => amountOnChange(e.target.value)
+        }
       />
       <div>
         <Button onClick={addExpense}>Add</Button>
@@ -101,9 +113,9 @@ function Months({callbackFn}: IMonthProps) {
     <>
       <ul className={styles.monthsContainer}>
         {monthNames.map((month, index) => {
-          // console.log('currentMonth: ', currentMonth,' month: ', month)
           const isBeyondCurrentMonth = index > currentMonth
           const isSelectedMonth = selectedMonth === index
+
           return (
             <li
               key={month}
