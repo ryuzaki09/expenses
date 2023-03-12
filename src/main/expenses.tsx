@@ -1,13 +1,17 @@
-import React, {useState} from 'react'
+import React, {useEffect, useState} from 'react'
 import classname from 'classnames'
 import {format} from 'date-fns'
 import {DayPicker} from 'react-day-picker'
 
 import {TextInput} from '../common/components/textInput'
 import {Button} from '../common/components/button'
+import {ExpenseList} from "./expenseList";
+import api from '../api'
+
 
 import 'react-day-picker/dist/style.css'
 import styles from './expenses.module.css'
+import { ExpenseTotals } from "./expenseTotals";
 
 const today = new Date()
 const year = today.getFullYear()
@@ -17,20 +21,33 @@ const monthNames = [
   'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
 ]
 
+const defaultExpense = {
+  date: null,
+  title: '',
+  amount: null
+}
+
 interface IExpenseDetails {
   date: null | string;
   title: string;
-  amount: string;
+  amount: null | number;
 }
 
 export function Expenses() {
   const [datePickerIsOpen, setDatePickerIsOpen] = useState(false)
   const [datePickerDate, setDatePickerDate] = useState(today)
-  const [expenseDetails, setExpenseDetails] = useState<IExpenseDetails>({
-    date: null,
-    title: '',
-    amount: ''
-  })
+  const [expenseList, setExpenseList] = useState<IExpenseDetails[]>([])
+  const [expenseDetails, setExpenseDetails] = useState<IExpenseDetails>(defaultExpense)
+
+  useEffect(() => {
+    const fetchExpenses = async () => {
+      const {data} = await api.getExpensesForMonth()
+      if (data) {
+        setExpenseList(data as any)
+      }
+    }
+    fetchExpenses()
+  }, [])
 
   const onFocusHandler = () => {
     setDatePickerIsOpen(true);
@@ -47,7 +64,7 @@ export function Expenses() {
     setDatePickerDate(newDate)
   }
 
-  const amountOnChange = (value: string) => {
+  const amountOnChange = (value: number) => {
     console.log('value: ', value)
     if (isNaN(+value)) {
       return
@@ -55,11 +72,22 @@ export function Expenses() {
 
     setExpenseDetails((prevState) => ({...prevState, amount: value}))
   }
+
   const titleOnChange = (value: string) => {
     setExpenseDetails((prevState) => ({...prevState, title: value}))
   }
+
   const addExpense = () => {
     console.log('expenseDetails: ', expenseDetails)
+    setExpenseList([
+      ...expenseList,
+      {
+        title: expenseDetails.title,
+        date: expenseDetails.date,
+        amount: expenseDetails.amount
+      }
+    ])
+    setExpenseDetails(defaultExpense)
   }
 
   return (
@@ -89,15 +117,17 @@ export function Expenses() {
         }
       />
       <TextInput
-        value={expenseDetails.amount}
+        value={`${expenseDetails.amount}`}
         label="amount"
         onChange={
-          (e: React.ChangeEvent<HTMLInputElement>) => amountOnChange(e.target.value)
+          (e: React.ChangeEvent<HTMLInputElement>) => amountOnChange(+e.target.value)
         }
       />
       <div>
         <Button onClick={addExpense}>Add</Button>
       </div>
+      <ExpenseList expenses={expenseList} />
+      <ExpenseTotals expenses={expenseList} />
     </>
   )
 }
